@@ -1,6 +1,14 @@
 import json
 import random as rand
-
 import numpy as np
-data_list = np.random.randint(0, 10, size=100)
-print(data_list)
+data_lists = {}
+
+for i in range(100):
+    list_filler = []
+    for a in range(100):
+        list_filler.append(rand.randrange(9))
+    data_lists[i] = list_filler
+with open("data_file.json", "w") as write_file:
+    json.dump(data_lists, write_file)
+
+print(data_lists)
