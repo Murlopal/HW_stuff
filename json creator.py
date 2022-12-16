@@ -12,21 +12,21 @@ class second:
 for i in range(100):
     list_filler = {}
     if i % 2 == 0:
-        z = {}
+        z = []
         list_filler = first()
         for a in range(10):
-            z[a] = (rand.randrange(10))
+            z.append(rand.randrange(10))
         list_filler.filling = z
         list_filler.name = 'type_one'
     else:
-        x = {}
+        x = []
         list_filler = second()
         for a in range(10):
-            x[a] = (rand.randrange(10))
+            x.append(rand.randrange(10))
         list_filler.filling = x
         list_filler.name = 'type_two'
 
-    json_string = json.dumps(list_filler.__dict__)
+    json_string = json.dumps(list_filler)
     data_lists[i] = json_string
 
 

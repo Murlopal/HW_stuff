@@ -2,35 +2,84 @@ import json
 
 import requests
 
-r = requests.get('https://api.github.com/events')
 
-r.json()
-class first:
-    def __init__(self, value_one, value_two):
-        self.one = value_one
-        self.two = value_two
-
-class second:
-    def __init__(self, value_one, value_two):
-        self.one = value_one
-        self.two = value_two
-
-def histDistance(hist1, hist2)->float:
+def histDistance(hist1, hist2) -> float:
     distance = 0
     sum_square_diff = 0
     for i in range(len(hist1)):
-        square_diff = (hist1[i] - hist2[i])**2
+        square_diff = (hist1[i] - hist2[i]) ** 2
         sum_square_diff = sum_square_diff + square_diff
-    distance = sum_square_diff**(0.5)
+    distance = sum_square_diff ** (0.5)
     return distance
 
-    list_filler[i] = first(value_one=1, value_two=2)
-else:
-    list_filler[i] = first(value_one=1, value_two=2)
+
+r = requests.get("https://raw.githubusercontent.com/Murlopal/HW_stuff/main/data_file.json")
+file_base = json.loads(r.text)
+print(file_base['2'])
 
 
-ideal_1 = [0, 8, 8, 4, 2, 2, 6, 8, 8, 3, 1, 4, 5, 2, 6, 4, 3, 4, 0, 3, 8, 3, 6, 4, 5, 7, 5, 6, 6, 5, 0, 8, 0, 8, 3, 7, 0, 5, 0, 5, 8, 2, 5, 1, 6, 2, 4, 1, 1, 2, 8, 0, 2, 1, 4, 3, 3, 2, 4, 3, 7, 2, 6, 6, 1, 8, 0, 4, 5, 1, 7, 1, 1, 5, 3, 2, 8, 7, 8, 4, 2, 6, 8, 1, 3, 7, 3, 0, 7, 4, 1, 3, 8, 4, 3, 0, 6, 1, 3, 7]
-ideal_2 = [3, 8, 1, 6, 5, 3, 4, 2, 8, 0, 3, 6, 6, 3, 3, 0, 2, 3, 1, 0, 1, 0, 6, 1, 6, 5, 3, 7, 7, 6, 7, 5, 5, 4, 7, 8, 6, 8, 5, 5, 3, 4, 8, 0, 0, 0, 4, 4, 1, 1, 3, 8, 6, 2, 3, 8, 1, 6, 4, 3, 2, 5, 6, 1, 3, 4, 3, 0, 1, 0, 8, 4, 1, 5, 7, 3, 6, 3, 0, 7, 4, 3, 6, 5, 7, 4, 3, 3, 8, 2, 1, 6, 0, 1, 3, 4, 8, 0, 7, 0]
-ideal_3 = [1, 0, 1, 6, 1, 6, 0, 7, 1, 4, 2, 5, 0, 7, 2, 3, 4, 4, 7, 8, 0, 0, 1, 7, 7, 4, 7, 1, 3, 5, 1, 0, 1, 8, 6, 8, 6, 3, 4, 1, 5, 2, 6, 6, 3, 0, 4, 7, 4, 1, 7, 2, 8, 1, 1, 6, 7, 8, 2, 6, 2, 1, 7, 8, 4, 3, 4, 2, 7, 2, 4, 5, 7, 2, 3, 6, 6, 6, 2, 1, 1, 2, 2, 0, 2, 1, 5, 3, 8, 7, 7, 6, 0, 1, 6, 6, 1, 6, 2, 1]
+
+
+class dist_mes:
+    dist = 0
+    type_name = ''
+
+
+def json_untangler_filling(key):
+    def intersection(lst1, lst2):
+        # Use of hybrid method
+        temp = set(lst2)
+        lst3 = [value for value in lst1 if value in temp]
+        return lst3
+
+    another_list = []
+    for i in range(13, 93):  # only works with histogramms made of 10 numbers. Can be easily fixed
+        another_list.append(file_base[f"{key}"][i])
+    values = list(map(int, (intersection(another_list, ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']))))
+    return (values[1::2])
+
+
+def json_untangler_name(key):
+    another_list = []
+    for i in range(103, 111):
+        another_list.append(file_base[f'{key}'][i])
+    return ''.join(another_list)
+
+
+
 
 class NNClassifier:
+
+    def __init__(self, filling):
+        self.filling = filling
+
+
+    def type_finder(self):
+
+        first_dist = dist_mes()
+        first_dist.dist = 99999999
+
+        second_dist = dist_mes()
+        second_dist.dist = 99999999
+
+        third_dist = dist_mes()
+        third_dist.dist = 99999999
+
+        for e in range(len(file_base) - 1):
+            if histDistance(self.filling, json_untangler_filling(e)) == 0:
+                first_dist.dist = 0
+                first_dist.type_name = json_untangler_name(e)
+            elif histDistance(self.filling, json_untangler_filling(e)) < first_dist.dist:
+                third_dist.dist = second_dist.dist
+                third_dist.type_name = second_dist.type_name
+                second_dist.dist = first_dist.dist
+                second_dist.type_name = first_dist.type_name
+                first_dist.dist = histDistance(self.filling, json_untangler_filling(e))
+                first_dist.type_name = json_untangler_name(e)
+        if first_dist.type_name == second_dist.type_name or third_dist.type_name:
+            return first_dist.type_name
+        else:
+            return second_dist.type_name
+
+
+print(NNClassifier([9,9,3,4,9,6,7,8,9,0]).type_finder())
